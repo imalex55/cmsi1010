@@ -43,20 +43,111 @@
 # ----------------------------------------------------------------------
 
 import random
+import re
+
+
 
 templates = [
-
     {
-        "text": "Some :adjective :creature with a :weapon is eating :dessert",
+        "text": "Some :adjective :creature with a :weapon is eating :dessert.",
         "author": "rtoal"
     },
     {
-        "text": "Look! There is a :adverb : adjective :verb a :noun in :place",
+        "text": "Look! There is a :adverb :adjective :noun :verb in :place.",
         "author": "The whole class"
-    }
-
-
+    },
+    {
+        "text": "The :color :animal :past_tense_verb over the :adjective :plant.",
+        "author": "rtoal"
+    },
+    {
+        "text": "Dear :person, I am writing to tell you that your :noun has been "
+                ":past_tense_verb by a :adjective :animal.",
+        "author": "The whole class"
+    },
+    {
+        "text": "To make the perfect :food, first :verb the :noun, then add "
+                ":number cups of :liquid.",
+        "author": "rtoal"
+    },
+    {
+        "text": "Breaking news: a :adjective :profession was seen :verb_ing "
+                "through :place while wearing a :color :clothing_item.",
+        "author": "The whole class"
+    },
+    {
+        "text": "My :family_member once :past_tense_verb a :adjective :animal "
+                "and now we are :adjective forever.",
+        "author": "rtoal"
+    },
+    {
+        "text": "Welcome to :place! Please keep your :body_part inside the "
+                ":vehicle at all times and do not feed the :animal.",
+        "author": "The whole class"
+    },
+    {
+        "text": "In the year :number, scientists discovered that :food is "
+                "really just a :adjective :noun in disguise.",
+        "author": "rtoal"
+    },
+    {
+        "text": "Once upon a time, a :adjective :profession named :person "
+                "found a magic :noun and shouted \":exclamation!\"",
+        "author": "The whole class"
+    },
 ]
 
-yes_answers = {"yes", "si", "oui", "yup", "bet", "yea", "yeah", "ye", "yep"}.strip().lower()
-current_template = random.choice(templates)
+yes_answers = {
+    "yes", "y", "si", "sí", "oui", "yup", "bet", "yea", "yeah", "ye", "yep",
+    "sure", "ok", "okay" "ight" "alr" "alright"
+}
+
+MIN_LENGTH = 1
+MAX_LENGTH = 30
+
+
+BLANK_PATTERN = re.compile(r":(\w+)")
+
+
+def ask_for_word(description):
+    """Keep prompting until the user gives a word of valid length."""
+    label = description.replace("_", " ")
+    while True:
+        answer = input(f"Enter a {label}: ").strip()
+        if MIN_LENGTH <= len(answer) <= MAX_LENGTH:
+            return answer
+        print(f"Please enter between {MIN_LENGTH} and {MAX_LENGTH} characters.")
+
+
+def fill_template(text):
+    """Prompt for each blank in the template and return the completed text."""
+    return BLANK_PATTERN.sub(lambda match: ask_for_word(match.group(1)), text)
+
+
+def play_round():
+    """Play one round: pick a template, fill it in, and show the result."""
+    template = random.choice(templates)
+    completed = fill_template(template["text"])
+    print()
+    print(completed)
+    print()
+    print(f"Template written by: {template['author']}")
+
+
+def wants_to_play_again():
+    """Ask the user whether to play again and interpret the answer."""
+    print("\n")
+    answer = input("Do you want to play again? ").strip().lower()
+    return answer in yes_answers
+
+
+def main():
+    while True:
+        play_round()
+        if not wants_to_play_again():
+            print("Thanks for playing!")
+            break
+
+
+if __name__ == "__main__":
+    main()
