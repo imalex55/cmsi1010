@@ -17,7 +17,7 @@ def random_hint(country):
         case "region":
             hint = "in " + country["region"]
         case "landmark":
-            hint = "where you can find " + random.choice(country["landmarks"])
+            hint = "where " + random.choice(country["landmarks"]) + " is"
         case "distance":
             los_angeles = (34.0522, -118.2437)
             from_LA = haversine(los_angeles, country["coordinates"], unit="km")
